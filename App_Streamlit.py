@@ -7,8 +7,7 @@ Created on Thu July 7th, 2022
 import streamlit as st
 import warnings
 
-# EDA Pkgs
-import pandas as pd
+# packages needed
 import numpy as np
 import pandas as pd
 import tweepy
@@ -26,7 +25,6 @@ import tqdm
 import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
-# sns.set_style('darkgrid')
 
 import dotenv
 
@@ -49,8 +47,8 @@ img {
 
 def main():
     """ Common ML Dataset Explorer """
-    #st.title("Live twitter Sentiment analysis")
-    #st.subheader("Select a topic which you'd like to get the sentiment analysis on :")
+    # st.title("Live twitter Sentiment analysis")
+    # st.subheader("Select a topic which you'd like to get the sentiment analysis on :")
 
     html_temp = """ 
     <div style="background-color:tomato;"><p style="color:white;font-size:40px;padding:9px">Live twitter Sentiment analysis</p></div>
@@ -77,7 +75,6 @@ def main():
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth)
-
 
     df = pd.DataFrame(columns=["Date","User","IsVerified","Tweet","Likes","RT",'User_location'])
     
@@ -118,17 +115,17 @@ def main():
             return 'Negative'
     
     # Function to Pre-process data for Worlcloud
-    def prep_cloud(Topic_text,Topic):
-        Topic = str(Topic).lower()
-        Topic=' '.join(re.sub('([^0-9A-Za-z \t])', ' ', Topic).split())
-        Topic = re.split("\s+",str(Topic))
+    def prep_cloud(topic_text, topic):
+        topic = str(topic).lower()
+        topic= ' '.join(re.sub('([^0-9A-Za-z \t])', ' ', topic).split())
+        topic = re.split("\s+", str(topic))
         stopwords = set(STOPWORDS)
-        stopwords.update(Topic) ### Add our topic in Stopwords, so it doesnt appear in wordClous
+        # Add our topic in Stopwords, so it doesnt appear in wordClous
+        stopwords.update(topic)
         ###
-        text_new = " ".join([txt for txt in Topic_text.split() if txt not in stopwords])
+        text_new = " ".join([txt for txt in topic_text.split() if txt not in stopwords])
         return text_new
 
-    #
     from PIL import Image
     image = Image.open('Logo1.jpg')
     st.image(image, caption='Twitter for Analytics',use_column_width=True)
@@ -144,7 +141,7 @@ def main():
             get_tweets(Topic , Count=200)
         st.success('Tweets have been Extracted !!!!')    
 
-        # Call function to get Clean tweets
+        # Call a function to get Clean tweets
         df['clean_tweet'] = df['Tweet'].apply(lambda x : clean_tweet(x))
     
         # Call function to get the Sentiments
@@ -169,7 +166,7 @@ def main():
             st.write(sns.countplot(df["Sentiment"]))
             st.pyplot()
         
-        # Piechart 
+        # draw a Pie chart
         if st.button("Get Pie Chart for Different Sentiments"):
             st.success("Generating A Pie Chart")
             a=len(df[df["Sentiment"]=="Positive"])
@@ -187,13 +184,15 @@ def main():
             st.write(sns.countplot(df["Sentiment"],hue=df.IsVerified))
             st.pyplot()
 
-        ## Points to add 1. Make Backgroud Clear for Wordcloud 2. Remove keywords from Wordcloud
+        # Points to add
+        # 1. Make Background Clear for Wordcloud
+        # 2. Remove keywords from Wordcloud
         # Create a Worlcloud
         if st.button("Get WordCloud for all things said about {}".format(Topic)):
             st.success("Generating A WordCloud for all things said about {}".format(Topic))
             text = " ".join(review for review in df.clean_tweet)
             stopwords = set(STOPWORDS)
-            text_newALL = prepCloud(text,Topic)
+            text_newALL = prep_cloud(text,Topic)
             wordcloud = WordCloud(stopwords=stopwords,max_words=800,max_font_size=70).generate(text_newALL)
             st.write(plt.imshow(wordcloud, interpolation='bilinear'))
             st.pyplot()
@@ -203,7 +202,7 @@ def main():
             st.success("Generating A WordCloud for all Positive Tweets about {}".format(Topic))
             text_positive = " ".join(review for review in df[df["Sentiment"]=="Positive"].clean_tweet)
             stopwords = set(STOPWORDS)
-            text_new_positive = prepCloud(text_positive,Topic)
+            text_new_positive = prep_cloud(text_positive,Topic)
             # text_positive=" ".join([word for word in text_positive.split() if word not in stopwords])
             wordcloud = WordCloud(stopwords=stopwords,max_words=800,max_font_size=70).generate(text_new_positive)
             st.write(plt.imshow(wordcloud, interpolation='bilinear'))
@@ -214,7 +213,7 @@ def main():
             st.success("Generating A WordCloud for all Positive Tweets about {}".format(Topic))
             text_negative = " ".join(review for review in df[df["Sentiment"]=="Negative"].clean_tweet)
             stopwords = set(STOPWORDS)
-            text_new_negative = prepCloud(text_negative,Topic)
+            text_new_negative = prep_cloud(text_negative,Topic)
             # text_negative=" ".join([word for word in text_negative.split() if word not in stopwords])
             wordcloud = WordCloud(stopwords=stopwords,max_words=800,max_font_size=70).generate(text_new_negative)
             st.write(plt.imshow(wordcloud, interpolation='bilinear'))
@@ -226,7 +225,7 @@ def main():
     st.sidebar.text("Built with Streamlit")
     
     st.sidebar.header("For Any Queries/Suggestions Please reach out at :")
-    st.sidebar.info("darekarabhishek@gmail.com")
+    st.sidebar.info("rbyakod@gmail.com")
     # st.sidebar.subheader("Scatter-plot setup")
     # box1 = st.sidebar.selectbox(label= "X axis", options = numeric_columns)
     # box2 = st.sidebar.selectbox(label="Y axis", options=numeric_columns)
