@@ -26,7 +26,7 @@ ssh -i "./twitter-sentiment.pem" ec2-user@ec2-18-237-125-37.us-west-2.compute.am
 
 run docker:
 
-you can pull as well:
+you can pull as well:  pull from hub.docker.com  (login first)
 docker pull rbyakod/twitter-sentiment:latest
 
 or run directly:
