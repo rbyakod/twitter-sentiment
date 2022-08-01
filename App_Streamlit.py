@@ -114,7 +114,7 @@ def main():
         else:
             return 'Negative'
     
-    # Function to Pre-process data for Worlcloud
+    # Function to Pre-process data for Worlcloudfi
     def prep_cloud(topic_text, topic):
         topic = str(topic).lower()
         topic= ' '.join(re.sub('([^0-9A-Za-z \t])', ' ', topic).split())
